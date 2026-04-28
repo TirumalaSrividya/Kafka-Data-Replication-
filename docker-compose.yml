@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  primary-kafka:
+    image: apache/kafka:3.7.0
+    container_name: primary-kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://primary-kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@primary-kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 5000
+
+  standby-kafka:
+    image: apache/kafka:3.7.0
+    container_name: standby-kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9094,CONTROLLER://0.0.0.0:9095
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://standby-kafka:9094
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@standby-kafka:9095
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+  mm2:
+    build:
+      context: ../kafka-fork
+      dockerfile: Dockerfile.mm2
+    image: custom-mm2
+    container_name: mm2
+    depends_on:
+      - primary-kafka
+      - standby-kafka
+    command: >
+      /opt/kafka/bin/connect-mirror-maker.sh /tmp/mm2.properties
+    volumes:
+      - ./mm2.properties:/tmp/mm2.properties
+    ports:
+      - "8083:8083"
+
+  producer:
+    build: ./producer
+    container_name: producer
+    depends_on:
+      - primary-kafka
