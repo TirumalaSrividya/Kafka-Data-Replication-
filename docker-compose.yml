@@ -29,10 +29,10 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
 
   mm2:
+    image: srividyatirumala/custom-mm2:latest  # pulls from Docker Hub first
     build:
-      context: ../kafka-fork
+      context: ../kafka-fork                    # fallback if image not found locally
       dockerfile: Dockerfile.mm2
-    image: custom-mm2
     container_name: mm2
     depends_on:
       - primary-kafka
@@ -45,6 +45,7 @@ services:
       - "8083:8083"
 
   producer:
+    image : srividyatirumala/kafka-producer:latest
     build: ./producer
     container_name: producer
     depends_on:

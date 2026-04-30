@@ -6,66 +6,25 @@ This repository provides a production-grade fault-tolerance layer for Kafka Mirr
 - **Kafka Fork**: [https://github.com/TirumalaSrividya/kafka]
 - **Pull Request**: [https://github.com/TirumalaSrividya/kafka/pull/2]
 
+
+
+
 ##  Docker Hub Images
 The project utilizes the following container images:
 - `custom-mm2:latest`: Custom-built MirrorMaker 2 image based on the modified Kafka source code.
 - `apache/kafka:3.7.0`: Standard Kafka image for Primary and Standby clusters.
 - `gradle:8-jdk17`: Build environment for recompiling Kafka modules.
 
-##  Setup Instructions
-To initialize the environment and start the clusters:
-1. **Clone the repository**: Ensure both `kafka-fork` and `kafka-assignment` are in the same parent directory.
-
-# Kafka MirrorMaker 2 - Fault Tolerance Enhancement
-
-## Prerequisites
-- Docker Desktop
-- PowerShell
-
-## How to Run
-
-### First Time Setup
-```bash
-docker-compose build --no-cache mm2
-docker-compose up -d
-```
-
-### Run Tests
-```powershell
-powershell -ExecutionPolicy Bypass -File .\run_challenge.ps1
-```
-
-*Note: If you encounter an "Execution Policy" error, use the following command instead:*
-```powershell
-powershell -ExecutionPolicy Bypass -File .\run_challenge.ps1
-```
-
-
-### Cleanup
-```bash
-docker-compose down -v
-```
-
-## Monitor Logs (Optional)
-```bash
-docker logs -f mm2
-```
-
-### Manual Verification (Kafka Tools)
-- **Check Primary Offsets**:
-  `docker exec primary-kafka /opt/kafka/bin/kafka-get-offsets.sh --bootstrap-server primary-kafka:9092 --topic commit-log`
-- **Check Standby Offsets**:
-  `docker exec standby-kafka /opt/kafka/bin/kafka-get-offsets.sh --bootstrap-server standby-kafka:9094 --topic primary.commit-log`
 
 
 
 
 ### Interpreting Results:
-- **Scenario 1 (Normal)**: Replicates 200 messages. SUCCESS if all messages are found on the Standby cluster.
+- **Scenario 1 (Normal)**: Replicates 1000 messages. SUCCESS if all messages are found on the Standby cluster.
 - **Scenario 2 (Log Truncation)**: Triggers a "Fail-Fast" crash. SUCCESS if `DATA LOSS DETECTED` appears in logs.
 - **Scenario 3 (Topic Reset)**: Deletes/recreates the primary topic. SUCCESS if `TOPIC RESET DETECTED` appears and replication resumes from 0.
 
-## 🔍 Log Analysis
+##  Log Analysis
 Monitor the following key messages in the MM2 container logs:
 - `docker logs -f mm2`
 - **Fail-Fast Error**: `ERROR DATA LOSS DETECTED on commit-log-0! Expected offset X, but got Y.`
