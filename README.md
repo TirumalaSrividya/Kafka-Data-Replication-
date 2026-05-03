@@ -71,7 +71,7 @@ Produces 100 messages, pauses MM2, deletes and recreates the `commit-log` topic 
 ==================================================
  ALL SCENARIOS PASSED SUCCESSFULLY ✅
 ==================================================
-
+```
        
 ---
 
