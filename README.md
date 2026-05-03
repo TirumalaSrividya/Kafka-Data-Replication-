@@ -5,7 +5,7 @@
 | Resource | URL |
 |---|---|
 | Kafka Fork | https://github.com/TirumalaSrividya/kafka |
-| Pull Request | https://github.com/TirumalaSrividya/kafka/pull/3 |
+| Pull Request | https://github.com/TirumalaSrividya/kafka/pull/3|
 
 ---
 
@@ -111,13 +111,13 @@ docker exec primary-kafka \
 
 ## Design Rationale
 
-Topic creation before MM2 startup
+## Topic creation before MM2 startup
 MM2 scans topics only at startup, so commit-log is created before MM2 starts to ensure it gets picked up for replication.
 
-Data-loss detection
+## Data-loss detection
 If the incoming offset is ahead of expected, messages were purged before replication. The connector logs DATA LOSS DETECTED and stops.
 
-Topic-reset detection
+## Topic-reset detection
 If the incoming offset is behind expected, the topic was recreated. The connector logs TOPIC RESET DETECTED and seeks to the beginning to resume from offset 0.
 
 ### MirrorMaker 2 configuration highlights (`mm2.properties`)
