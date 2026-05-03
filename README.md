@@ -70,11 +70,11 @@ Produces 100 messages, pauses MM2, deletes and recreates the `commit-log` topic 
 ✅ SCENARIO 3 PASSED – MM2 detected topic reset and recovered automatically
 
 
-![Screenshot1](Screenshot 2026-04-30 184231.png)
+![Screenshot1](Screenshot%202026-04-30%20184042.png)
 
-![Screenshot2](Screenshot 2026-04-30 184127.png)
+![Screenshot2](Screenshot%202026-04-30%20184127.png)
 
-![Screenshot3](Screenshot 2026-04-30 184042.png)
+![Screenshot3](Screenshot%202026-04-30%20184231.png)
 
 
 ```
