@@ -71,11 +71,8 @@ Produces 100 messages, pauses MM2, deletes and recreates the `commit-log` topic 
 ==================================================
  ALL SCENARIOS PASSED SUCCESSFULLY ✅
 ==================================================
-```
 
-
-[alt text](<Screenshot 2026-04-30 184231.png>) !                                  [alt text](<Screenshot 2026-04-30 184127.png>)!                                    [alt text](<Screenshot 2026-04-30 184042.png>) !   
-
+       
 ---
 
 ## Log Analysis
