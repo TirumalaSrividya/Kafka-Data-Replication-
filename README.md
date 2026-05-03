@@ -68,9 +68,15 @@ Produces 100 messages, pauses MM2, deletes and recreates the `commit-log` topic 
 ✅ SCENARIO 1 PASSED – Replication verified
 ✅ SCENARIO 2 PASSED – MM2 detected log truncation and failed fast
 ✅ SCENARIO 3 PASSED – MM2 detected topic reset and recovered automatically
-==================================================
- ALL SCENARIOS PASSED SUCCESSFULLY ✅
-==================================================
+
+
+![Screenshot1](Screenshot%202026-04-30%20184231.png)
+
+![Screenshot2](Screenshot%202026-04-30%20184127.png)
+
+![Screenshot3](Screenshot%202026-04-30%20184042.png)
+
+
 ```
        
 ---
