@@ -69,7 +69,6 @@ Produces 100 messages, pauses MM2, deletes and recreates the `commit-log` topic 
 
 ```       
 ---
----
 
 ## Unit Test Execution - Core Functionality
 
@@ -108,6 +107,14 @@ gradlew.bat :connect:mirror:test --no-daemon ^
 | `testTopicResetDoesNotDropOtherPartitions` | Topic reset seeks to beginning without dropping other partition assignments |
 | `testOffsetOutOfRangeThrowsDataLossException` | `DataLossException` is thrown via the `OffsetOutOfRangeException` path |
 
+## Passing Output
+
+```
+MirrorSourceTaskTest > testDataLossDetectedAtStartup() PASSED
+MirrorSourceTaskTest > testTopicResetDoesNotDropOtherPartitions() PASSED
+MirrorSourceTaskTest > testOffsetOutOfRangeThrowsDataLossException() PASSED
+BUILD SUCCESSFUL
+```  
 ---
 
 ## Log Analysis
