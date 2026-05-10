@@ -71,6 +71,54 @@ Produces 100 messages, pauses MM2, deletes and recreates the `commit-log` topic 
 
 ```       
 ---
+---
+
+## Unit Test Execution - Core Functionality
+
+The core detection logic is covered by unit tests that run without Docker or a live Kafka broker.
+
+### Prerequisites
+
+- Java 17+
+- Run from inside the Kafka fork directory
+
+```bash
+cd kafka-fork
+```
+
+### Run all three new unit tests
+
+**Git Bash / Linux / Mac:**
+```bash
+./gradlew :connect:mirror:test --no-daemon \
+  --tests "*MirrorSourceTaskTest.testDataLossDetectedAtStartup" \
+  --tests "*MirrorSourceTaskTest.testTopicResetDoesNotDropOtherPartitions" \
+  --tests "*MirrorSourceTaskTest.testOffsetOutOfRangeThrowsDataLossException"
+```
+
+**Windows CMD:**
+```cmd
+gradlew.bat :connect:mirror:test --no-daemon ^
+  --tests "*MirrorSourceTaskTest.testDataLossDetectedAtStartup" ^
+  --tests "*MirrorSourceTaskTest.testTopicResetDoesNotDropOtherPartitions" ^
+  --tests "*MirrorSourceTaskTest.testOffsetOutOfRangeThrowsDataLossException"
+```
+
+### What each test verifies
+
+| Test | What it proves |
+|---|---|
+| `testDataLossDetectedAtStartup` | `DataLossException` is thrown at startup when broker's earliest offset is ahead of committed offset — catches gaps that opened while MM2 was down |
+| `testTopicResetDoesNotDropOtherPartitions` | Topic reset seeks to beginning without dropping other partition assignments |
+| `testOffsetOutOfRangeThrowsDataLossException` | `DataLossException` is thrown via the `OffsetOutOfRangeException` path |
+
+### Expected Output
+
+MirrorSourceTaskTest > testDataLossDetectedAtStartup() PASSED
+MirrorSourceTaskTest > testTopicResetDoesNotDropOtherPartitions() PASSED
+MirrorSourceTaskTest > testOffsetOutOfRangeThrowsDataLossException() PASSED
+BUILD SUCCESSFUL
+---
 
 ## Log Analysis
 
