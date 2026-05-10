@@ -51,8 +51,6 @@ chmod +x run_challenge.sh
 
 The script executes three scenarios in sequence and prints a `PASSED` or `FAILED` result for each.
 
-### What each scenario does
-
 **Scenario 1 — Normal Replication**
 Produces 1 000 messages to the primary cluster and verifies that the topic `primary.commit-log` appears on the standby cluster with the expected message count.
 
