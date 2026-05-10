@@ -102,15 +102,13 @@ gradlew.bat :connect:mirror:test --no-daemon ^
   --tests "*MirrorSourceTaskTest.testOffsetOutOfRangeThrowsDataLossException"
 ```
 
-### What each test verifies
-
 | Test | What it proves |
 |---|---|
 | `testDataLossDetectedAtStartup` | `DataLossException` is thrown at startup when broker's earliest offset is ahead of committed offset — catches gaps that opened while MM2 was down |
 | `testTopicResetDoesNotDropOtherPartitions` | Topic reset seeks to beginning without dropping other partition assignments |
 | `testOffsetOutOfRangeThrowsDataLossException` | `DataLossException` is thrown via the `OffsetOutOfRangeException` path |
 
-### Expected Output
+### Passing Output
 
 MirrorSourceTaskTest > testDataLossDetectedAtStartup() PASSED
 MirrorSourceTaskTest > testTopicResetDoesNotDropOtherPartitions() PASSED
