@@ -5,7 +5,7 @@
 | Resource | URL |
 |---|---|
 | Kafka Fork | https://github.com/TirumalaSrividya/kafka |
-| Pull Request | https://github.com/TirumalaSrividya/kafka/pull/3|
+| Pull Request | https://github.com/TirumalaSrividya/kafka/pull/6
 
 ---
 
