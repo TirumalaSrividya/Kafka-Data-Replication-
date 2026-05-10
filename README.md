@@ -108,20 +108,32 @@ docker exec primary-kafka \
 
 ## Design Rationale
 
-## Topic creation before MM2 startup
-MM2 scans topics only at startup, so commit-log is created before MM2 starts to ensure it gets picked up for replication.
+## DataLossException instead of ConnectException
+A typed exception lets operators and monitoring systems distinguish a data loss halt from any other connector failure. It still extends ConnectException so Connect's worker handles it correctly.
 
-## Data-loss detection
-If the incoming offset is ahead of expected, messages were purged before replication. The connector logs DATA LOSS DETECTED and stops.
+## In-memory offset tracking via expectedOffsets
+OffsetOutOfRangeException fires one poll cycle too late — the broker has already rejected the fetch. The expectedOffsets map catches gaps on the very first successfully received record, before forwarding it. handleOffsetOutOfRange() acts as a secondary safety net for cases the map cannot reach.
 
-## Topic-reset detection
-If the incoming offset is behind expected, the topic was recreated. The connector logs TOPIC RESET DETECTED and seeks to the beginning to resume from offset 0.
+## checkOffsetAnomaly() and handleOffsetOutOfRange() as separate methods
+Kafka enforces a cyclomatic complexity limit of 16 per method. The combined detection logic pushed poll() to 18. Extracting the two helpers brings each method under the limit while keeping responsibilities clear.
 
-### MirrorMaker 2 configuration highlights (`mm2.properties`)
+## Consumer interface instead of KafkaConsumer
+MockConsumer implements Consumer directly and does not extend KafkaConsumer. Changing the field to Consumer<byte[], byte[]> allows unit tests to inject MockConsumer without casting. Production code is unaffected.
 
-| Setting | Value | Reason |
-|---|---|---|
-| `primary.auto.offset.reset` | `earliest` | Ensures MM2 starts from the beginning when no committed offset exists |
+## putExpectedOffset() as a test hook
+A named public method is a deliberate, documented seeding operation for tests. Making the field package-private would expose the entire map to accidental mutation by any class in the package.
+
+## Fail-fast on data loss
+Silent skipping leaves the standby permanently out of sync with no alert. Throwing DataLossException forces a conscious operator decision — restore from backup, accept the gap, or trigger an incident.
+
+## Seek to beginning on topic reset
+The committed offset no longer exists on a recreated topic. Seeking to it would skip records 0 through committed-1. Seeking to beginning ensures full replication of the new topic.
+
+## Startup gap check in initializeConsumer()
+The in-memory map is lost on restart. Without a startup check the first polled record would silently baseline at the post-truncation offset. Comparing beginningOffsets() against the committed offset at startup catches data loss that occurred while MM2 was down.
+
+## Known limitation
+Partitions with no prior committed offset are not checked at startup — they baseline on first poll, which is correct since there is no prior replication state to compare against.
 
 ---
 
