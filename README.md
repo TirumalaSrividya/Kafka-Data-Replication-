@@ -108,12 +108,6 @@ gradlew.bat :connect:mirror:test --no-daemon ^
 | `testTopicResetDoesNotDropOtherPartitions` | Topic reset seeks to beginning without dropping other partition assignments |
 | `testOffsetOutOfRangeThrowsDataLossException` | `DataLossException` is thrown via the `OffsetOutOfRangeException` path |
 
-### Passing Output
-
-MirrorSourceTaskTest > testDataLossDetectedAtStartup() PASSED
-MirrorSourceTaskTest > testTopicResetDoesNotDropOtherPartitions() PASSED
-MirrorSourceTaskTest > testOffsetOutOfRangeThrowsDataLossException() PASSED
-BUILD SUCCESSFUL
 ---
 
 ## Log Analysis
