@@ -18,21 +18,21 @@
 
 ---
 
-## Folder Structure
-
+📁 Folder Structure
 Kafka-Data-Replication-/
-|── producer/                        # Java producer service
+│
+├── producer/                        # Java producer service
 │   ├── Dockerfile
 │   └── src/
 │       └── main/
 │           └── java/
-│               └── KafkaProducer.java   # sends JSON commit-log events                      
+│               └── KafkaProducer.java   # Sends JSON commit-log events
 │
-├── README.md
-├── docker-compose.yml                 # Configuration file
-├── mm2.properties                     
-├── reset.json
-└── run_challenge.sh                  # Automation Script
+├── README.md                        # Project documentation
+├── docker-compose.yml               # Service configuration
+├── mm2.properties                   # MirrorMaker 2 configuration
+├── reset.json                       # Reset configuration file
+└── run_challenge.sh                 # Automation script
 
 
 ## Setup Instructions
