@@ -18,7 +18,9 @@
 
 ---
 
-📁 Folder Structure
+## 📁 Folder Structure
+
+```
 Kafka-Data-Replication-/
 │
 ├── producer/                        # Java producer service
@@ -33,7 +35,7 @@ Kafka-Data-Replication-/
 ├── mm2.properties                   # MirrorMaker 2 configuration
 ├── reset.json                       # Reset configuration file
 └── run_challenge.sh                 # Automation script
-
+```
 
 ## Setup Instructions
 
