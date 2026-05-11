@@ -21,16 +21,16 @@
 ## Folder Structure
 
 Kafka-Data-Replication-/
-├── producer/                          # Producer
+├── producer/                         
 │
 ├── README.md
 ├── Screenshot 2026-04-30 184042.png   # Scenario 1 – Normal Replication output
 ├── Screenshot 2026-04-30 184127.png   # Scenario 2 – Data Loss Detection output
 ├── Screenshot 2026-04-30 184231.png   # Scenario 3 – Topic Reset Recovery output
-├── docker-compose.yml                 # configuration file
+├── docker-compose.yml                 
 ├── mm2.properties
 ├── reset.json
-└── run_challenge.sh                  # Automation Script 
+└── run_challenge.sh                  
 
 
 ## Setup Instructions
