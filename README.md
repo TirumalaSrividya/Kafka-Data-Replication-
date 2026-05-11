@@ -68,15 +68,15 @@ chmod +x run_challenge.sh
 The script executes three scenarios in sequence and prints a `PASSED` or `FAILED` result for each.
 
 **Scenario 1 — Normal Replication**
-Produces 1000 messages to the primary cluster and verifies that the topic `primary.commit-log` appears on the standby cluster with the expected message count.
+
 ![Scenario 1 – Normal Replication](Screenshot%202026-05-11%20114303.png)
 
 **Scenario 2 — Log Truncation / Data Loss Detection**
-Pauses MM2, sets an aggressive 30-second retention on the primary, produces 1000 messages, waits for them to be purged, then restarts MM2. Expected result: MM2 logs `DATA LOSS DETECTED` and halts instead of silently skipping offsets.
+
 ![Scenario 2 – Data Loss Detection](Screenshot%202026-05-11%20114522.png)
 
 **Scenario 3 — Topic Reset Recovery**
-Produces 100 messages, pauses MM2, deletes and recreates the `commit-log` topic on the primary (resetting offsets to 0), then resumes MM2. Expected result: MM2 logs `TOPIC RESET DETECTED` and automatically seeks to the beginning to replicate from offset 0.
+
 ![Scenario 3 – Topic Reset Recovery](Screenshot%202026-05-11%20114805.png)
 
 ---
