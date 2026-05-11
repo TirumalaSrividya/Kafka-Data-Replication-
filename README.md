@@ -1,5 +1,28 @@
 # Kafka MirrorMaker 2 Data Replication 
 
+## Architecture 
+
+![High Level Design](kafka_mm2_hld.svg)
+
+
+## 📁 Folder Structure
+```
+Kafka-Data-Replication-/
+│
+├── producer/                        # Java producer service
+│   ├── Dockerfile
+│   └── src/
+│       └── main/
+│           └── java/
+│               └── KafkaProducer.java   # Sends JSON commit-log events
+│
+├── README.md                        # Project documentation
+├── docker-compose.yml               # Service configuration
+├── mm2.properties                   # MirrorMaker 2 configuration
+├── reset.json                       # Reset configuration file
+└── run_challenge.sh                 # Automation script
+```
+---
 ## Repository Links
 
 | Resource | URL |
@@ -17,25 +40,6 @@
 | `srividyatirumala/kafka-producer` | `latest` | Java producer that sends JSON commit-log events |
 
 ---
-
-## 📁 Folder Structure
-
-```
-Kafka-Data-Replication-/
-│
-├── producer/                        # Java producer service
-│   ├── Dockerfile
-│   └── src/
-│       └── main/
-│           └── java/
-│               └── KafkaProducer.java   # Sends JSON commit-log events
-│
-├── README.md                        # Project documentation
-├── docker-compose.yml               # Service configuration
-├── mm2.properties                   # MirrorMaker 2 configuration
-├── reset.json                       # Reset configuration file
-└── run_challenge.sh                 # Automation script
-```
 
 ## Setup Instructions
 
