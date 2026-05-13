@@ -53,7 +53,7 @@ Kafka-Data-Replication-/
 ```bash
 # Clone the repo
 git clone https://github.com/TirumalaSrividya/Kafka-Data-Replication-
-cd <Kafka-Data-Replication->
+cd Kafka-Data-Replication-
 
 # Start everything (Kafka clusters + MM2 + producer)
 docker compose up -d
