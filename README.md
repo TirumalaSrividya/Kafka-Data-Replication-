@@ -71,7 +71,6 @@ Run the full challenge script:
 chmod +x run_challenge.sh
 ./run_challenge.sh
 ```
-The script executes three scenarios in sequence and prints a `PASSED` or `FAILED` result for each.
 
 **Scenario 1 — Normal Replication**
 
