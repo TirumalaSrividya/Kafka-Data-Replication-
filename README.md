@@ -7,7 +7,7 @@
 
 ## 📁 Folder Structure
 ```
-Kafka-Data-Replication-/
+Kafka-Data-Replication/
 │
 ├── producer/                        # Java producer service
 │   ├── Dockerfile
@@ -52,8 +52,8 @@ Kafka-Data-Replication-/
 
 ```bash
 # Clone the repo
-git clone https://github.com/TirumalaSrividya/Kafka-Data-Replication-
-cd Kafka-Data-Replication-
+git clone https://github.com/TirumalaSrividya/Kafka-Data-Replication
+cd Kafka-Data-Replication
 
 # Start everything (Kafka clusters + MM2 + producer)
 docker compose up -d
@@ -118,13 +118,7 @@ gradlew.bat :connect:mirror:test --no-daemon ^
   --tests "*MirrorSourceTaskTest.testOffsetOutOfRangeThrowsDataLossException"
 ```
 
-| Test | What it proves |
-|---|---|
-| `testDataLossDetectedAtStartup` | `DataLossException` is thrown at startup when broker's earliest offset is ahead of committed offset catches gaps that opened while MM2 was down |
-| `testTopicResetDoesNotDropOtherPartitions` | Topic reset seeks to beginning without dropping other partition assignments |
-| `testOffsetOutOfRangeThrowsDataLossException` | `DataLossException` is thrown via the `OffsetOutOfRangeException` path |
-
-## Passing Output
+## Expected Output
 
 ```
 MirrorSourceTaskTest > testDataLossDetectedAtStartup() PASSED
@@ -160,11 +154,9 @@ docker exec primary-kafka \
 
 ### Key log messages to monitor
 
-| Message | Meaning |
-|---|---|
-| `MM2 successfully assigned commit-log for replication` | MM2 picked up the topic at startup |
-| `DATA LOSS DETECTED` | MM2's last committed offset is behind the earliest available offset; replication halted |
-| `TOPIC RESET DETECTED` | Received an offset lower than the last committed one; MM2 seeks to beginning and resumes |
+- `MM2 successfully assigned commit-log for replication` 
+- `DATA LOSS DETECTED`
+- `TOPIC RESET DETECTED`
 
 ---
 
