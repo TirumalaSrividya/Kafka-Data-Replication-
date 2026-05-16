@@ -103,28 +103,13 @@ cd kafka-fork
 
 **Git Bash / Linux / Mac:**
 ```bash
-./gradlew :connect:mirror:test --no-daemon \
-  --tests "*MirrorSourceTaskTest.testDataLossDetectedAtStartup" \
-  --tests "*MirrorSourceTaskTest.testTopicResetDoesNotDropOtherPartitions" \
-  --tests "*MirrorSourceTaskTest.testOffsetOutOfRangeThrowsDataLossException"
+./gradlew :connect:mirror:test --tests "org.apache.kafka.connect.mirror.MirrorSourceTaskTest"
 ```
 
 **Windows CMD:**
 ```cmd
-gradlew.bat :connect:mirror:test --no-daemon ^
-  --tests "*MirrorSourceTaskTest.testDataLossDetectedAtStartup" ^
-  --tests "*MirrorSourceTaskTest.testTopicResetDoesNotDropOtherPartitions" ^
-  --tests "*MirrorSourceTaskTest.testOffsetOutOfRangeThrowsDataLossException"
+gradlew :connect:mirror:test --tests "org.apache.kafka.connect.mirror.MirrorSourceTaskTest"
 ```
-
-## Expected Output
-
-```
-MirrorSourceTaskTest > testDataLossDetectedAtStartup() PASSED
-MirrorSourceTaskTest > testTopicResetDoesNotDropOtherPartitions() PASSED
-MirrorSourceTaskTest > testOffsetOutOfRangeThrowsDataLossException() PASSED
-BUILD SUCCESSFUL
-```  
 ---
 
 ## Log Analysis
