@@ -99,8 +99,6 @@ The core detection logic is covered by unit tests that run without Docker or a l
 cd kafka-fork
 ```
 
-### Run all three new unit tests
-
 **Git Bash / Linux / Mac:**
 ```bash
 ./gradlew :connect:mirror:test --tests "org.apache.kafka.connect.mirror.MirrorSourceTaskTest"
