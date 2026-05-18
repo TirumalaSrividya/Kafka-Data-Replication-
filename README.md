@@ -28,7 +28,7 @@ Kafka-Data-Replication/
 | Resource | URL |
 |---|---|
 | Kafka Fork | https://github.com/TirumalaSrividya/kafka |
-| Pull Request | https://github.com/TirumalaSrividya/kafka/pull/7 |
+| Pull Request | https://github.com/TirumalaSrividya/kafka/pull/8|
 
 ---
 
