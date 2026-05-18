@@ -65,16 +65,16 @@ MirrorMaker 2 is configured via `mm2.properties` in the project root. It replica
 
 ## Test Execution
 
-Run the full challenge script:
+Run the full challenge script
 
-#Linux/macOS/Git Bash/WSL
+Linux/macOS/Git Bash/WSL
 
 ```bash
 chmod +x run_challenge.sh
 ./run_challenge.sh
 ```
 
-#Windows Command Prompt / PowerShell
+Windows Command Prompt / PowerShell
 
 ```powershell
 bash run_challenge.sh
