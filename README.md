@@ -7,7 +7,7 @@
 
 ## 📁 Folder Structure
 ```
-Kafka-Data-Replication-/
+Kafka-Data-Replication/
 │
 ├── producer/                        # Java producer service
 │   ├── Dockerfile
@@ -52,8 +52,8 @@ Kafka-Data-Replication-/
 
 ```bash
 # Clone the repo
-git clone https://github.com/TirumalaSrividya/Kafka-Data-Replication-
-cd <Kafka-Data-Replication->
+git clone https://github.com/TirumalaSrividya/Kafka-Data-Replication
+cd Kafka-Data-Replication
 
 # Start everything (Kafka clusters + MM2 + producer)
 docker compose up -d
@@ -65,13 +65,21 @@ MirrorMaker 2 is configured via `mm2.properties` in the project root. It replica
 
 ## Test Execution
 
-Run the full challenge script:
+Run the full challenge script
+
+ **Linux / Mac / Git Bash / WSL :**
 
 ```bash
 chmod +x run_challenge.sh
 ./run_challenge.sh
 ```
-The script executes three scenarios in sequence and prints a `PASSED` or `FAILED` result for each.
+
+**Windows Command Prompt / PowerShell :**
+
+```powershell
+bash run_challenge.sh
+```
+
 
 **Scenario 1 — Normal Replication**
 
@@ -100,38 +108,15 @@ The core detection logic is covered by unit tests that run without Docker or a l
 cd kafka-fork
 ```
 
-### Run all three new unit tests
-
 **Git Bash / Linux / Mac:**
 ```bash
-./gradlew :connect:mirror:test --no-daemon \
-  --tests "*MirrorSourceTaskTest.testDataLossDetectedAtStartup" \
-  --tests "*MirrorSourceTaskTest.testTopicResetDoesNotDropOtherPartitions" \
-  --tests "*MirrorSourceTaskTest.testOffsetOutOfRangeThrowsDataLossException"
+./gradlew :connect:mirror:test --tests "org.apache.kafka.connect.mirror.MirrorSourceTaskTest"
 ```
 
 **Windows CMD:**
 ```cmd
-gradlew.bat :connect:mirror:test --no-daemon ^
-  --tests "*MirrorSourceTaskTest.testDataLossDetectedAtStartup" ^
-  --tests "*MirrorSourceTaskTest.testTopicResetDoesNotDropOtherPartitions" ^
-  --tests "*MirrorSourceTaskTest.testOffsetOutOfRangeThrowsDataLossException"
+gradlew :connect:mirror:test --tests "org.apache.kafka.connect.mirror.MirrorSourceTaskTest"
 ```
-
-| Test | What it proves |
-|---|---|
-| `testDataLossDetectedAtStartup` | `DataLossException` is thrown at startup when broker's earliest offset is ahead of committed offset — catches gaps that opened while MM2 was down |
-| `testTopicResetDoesNotDropOtherPartitions` | Topic reset seeks to beginning without dropping other partition assignments |
-| `testOffsetOutOfRangeThrowsDataLossException` | `DataLossException` is thrown via the `OffsetOutOfRangeException` path |
-
-## Passing Output
-
-```
-MirrorSourceTaskTest > testDataLossDetectedAtStartup() PASSED
-MirrorSourceTaskTest > testTopicResetDoesNotDropOtherPartitions() PASSED
-MirrorSourceTaskTest > testOffsetOutOfRangeThrowsDataLossException() PASSED
-BUILD SUCCESSFUL
-```  
 ---
 
 ## Log Analysis
@@ -160,42 +145,43 @@ docker exec primary-kafka \
 
 ### Key log messages to monitor
 
-| Message | Meaning |
-|---|---|
-| `MM2 successfully assigned commit-log for replication` | MM2 picked up the topic at startup |
-| `DATA LOSS DETECTED` | MM2's last committed offset is behind the earliest available offset; replication halted |
-| `TOPIC RESET DETECTED` | Received an offset lower than the last committed one; MM2 seeks to beginning and resumes |
+- `MM2 successfully assigned commit-log for replication` 
+- `DATA LOSS DETECTED`
+- `TOPIC RESET DETECTED`
 
 ---
 
 ## Design Rationale
 
-## DataLossException instead of ConnectException
-A typed exception lets operators and monitoring systems distinguish a data loss halt from any other connector failure. It still extends ConnectException so Connect's worker handles it correctly.
+The implementation strategy was designed to extend Kafka MirrorMaker 2 with additional reliability checks for failure scenarios that are commonly seen in distributed data replication systems.
 
-## In-memory offset tracking via expectedOffsets
-OffsetOutOfRangeException fires one poll cycle too late — the broker has already rejected the fetch. The expectedOffsets map catches gaps on the very first successfully received record, before forwarding it. handleOffsetOutOfRange() acts as a secondary safety net for cases the map cannot reach.
+MirrorMaker 2 was chosen as the base implementation because it already provides stable and scalable cross-cluster replication. Instead of building a custom replication system from scratch, the project focuses on enhancing MM2’s replication behavior with additional fault-detection and recovery capabilities.
 
-## checkOffsetAnomaly() and handleOffsetOutOfRange() as separate methods
-Kafka enforces a cyclomatic complexity limit of 16 per method. The combined detection logic pushed poll() to 18. Extracting the two helpers brings each method under the limit while keeping responsibilities clear.
+An expected-offset tracking approach was implemented using an in-memory `expectedOffsets` map inside `MirrorSourceTask`. This strategy was chosen because offset progression is the most reliable way to identify replication anomalies during polling. By comparing incoming offsets with expected offsets, the system can detect:
+- Forward jumps in offsets → treated as log truncation or data loss
+- Backward jumps in offsets → treated as topic deletion and recreation (topic reset)
 
-## Consumer interface instead of KafkaConsumer
-MockConsumer implements Consumer directly and does not extend KafkaConsumer. Changing the field to Consumer<byte[], byte[]> allows unit tests to inject MockConsumer without casting. Production code is unaffected.
+A fail-fast strategy was intentionally used for data-loss detection. When the broker’s earliest available offset becomes greater than the expected offset, the task immediately throws a `DataLossException` instead of silently continuing replication. This approach was chosen to prevent unnoticed message loss and make replication failures explicit.
 
-## putExpectedOffset() as a test hook
-A named public method is a deliberate, documented seeding operation for tests. Making the field package-private would expose the entire map to accidental mutation by any class in the package.
+For topic reset scenarios, an automatic recovery strategy was implemented instead of failing the task. When offsets restart from zero after topic recreation, the consumer automatically seeks to the beginning and resumes replication. This decision was made because topic recreation is considered a recoverable operational scenario unlike irreversible data loss.
 
-## Fail-fast on data loss
-Silent skipping leaves the standby permanently out of sync with no alert. Throwing DataLossException forces a conscious operator decision — restore from backup, accept the gap, or trigger an incident.
+Special handling was added for compacted topics because Kafka log compaction naturally creates offset gaps. Without this logic, valid compaction behavior could be incorrectly detected as data loss. Compact topics are therefore excluded from strict gap validation.
 
-## Seek to beginning on topic reset
-The committed offset no longer exists on a recreated topic. Seeking to it would skip records 0 through committed-1. Seeking to beginning ensures full replication of the new topic.
+The implementation also performs startup validation using `beginningOffsets()` before replication begins. This strategy was chosen to detect already-truncated data immediately during task initialization rather than waiting for failures during runtime polling.
 
-## Startup gap check in initializeConsumer()
-The in-memory map is lost on restart. Without a startup check the first polled record would silently baseline at the post-truncation offset. Comparing beginningOffsets() against the committed offset at startup catches data loss that occurred while MM2 was down.
+Comprehensive unit tests were added for normal replication, offset synchronization, log truncation, topic reset recovery, compacted topic handling, and `OffsetOutOfRange` conditions. The testing strategy focuses on validating both successful replication behavior and failure handling paths to improve reliability and regression safety.
 
-## Known limitation
-Partitions with no prior committed offset are not checked at startup — they baseline on first poll, which is correct since there is no prior replication state to compare against.
+A fully automated Bash execution script was created to reproduce all replication scenarios consistently. The script performs:
+- Kafka cluster startup
+- Topic creation
+- MirrorMaker initialization
+- Controlled log truncation simulation
+- Topic reset simulation
+- Validation of MM2 recovery behavior
+
+This automation strategy was chosen to make the scenarios reproducible without requiring manual Kafka operations and to simplify evaluation of the challenge workflow.
+
+Overall, the implementation prioritizes reliability, fault detection, controlled recovery behavior, and reproducible testing while keeping the architecture modular and close to real-world Kafka replication workflows.
 
 ---
 

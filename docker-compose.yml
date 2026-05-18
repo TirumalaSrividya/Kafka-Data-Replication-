@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+version: '4.0'
+>>>>>>> c012aa7df1437f3e92e944c120d42f82aa8107e4
 
 services:
   primary-kafka:
